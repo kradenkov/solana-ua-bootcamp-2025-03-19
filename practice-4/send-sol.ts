@@ -5,6 +5,7 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
+  TransactionInstruction,
   clusterApiUrl,
   Connection,
   sendAndConfirmTransaction
@@ -35,6 +36,26 @@ const sendSolInstruction = SystemProgram.transfer({
 });
 transaction.add(sendSolInstruction);
 
+// add memo program
+
+// Get this address from https://spl.solana.com/memo
+const memoProgram = new PublicKey(
+"MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+);
+
+const memoText = "Hello from Solana!";
+
+const addMemoInstruction = new TransactionInstruction({
+keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: true }],
+data: Buffer.from(memoText, "utf-8"),
+programId: memoProgram,
+});
+
+transaction.add(addMemoInstruction);
+
+console.log(`📝 memo is: ${memoText}`);
+
+  
 const signature = await sendAndConfirmTransaction(connection, transaction, [
   sender,
 ]);
